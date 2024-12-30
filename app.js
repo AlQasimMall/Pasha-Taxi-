@@ -27,18 +27,11 @@ class NotificationHandler {
 
 async initialize() {
     try {
+        // محاولة تسجيل Service Worker
         if ('serviceWorker' in navigator) {
-            try {
-                this.swRegistration = await navigator.serviceWorker.register('/Pasha-taxi/firebase-messaging-sw.js', {
-                    scope: '/Pasha-taxi/'
-                });
-                console.log('Service Worker registered successfully:', this.swRegistration);
-            } catch (error) {
-                console.error('Service Worker registration failed:', error);
-            }
-        }
-    }
-}
+          this.swRegistration = await navigator.serviceWorker.register('https://alqasimmall.github.io/Pasha-taxi/firebase-messaging-sw.js', {
+            scope: '/Pasha-taxi/'
+        });
         
             console.log('Service Worker registered successfully:', this.swRegistration);
         }
@@ -622,21 +615,18 @@ notificationHandler.initialize().catch(console.error);
 
 
     function initMap() {
-    const defaultLocation = [33.3152, 44.3661];
-    try {
+        // الإحداثيات الافتراضية
+        const defaultLocation = [33.3152, 44.3661];
+
+        // إنشاء الخريطة مع خيارات التخصيص
         map = L.map('map', {
             center: defaultLocation,
             zoom: 8,
-            zoomControl: false,
-            attributionControl: false,
+            zoomControl: false, // إخفاء التحكم الافتراضي بالتكبير/التصغير
+            attributionControl: false, // إخفاء شريط النسب
         });
-        
-        // تحديث مسار خرائط Leaflet
         const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
-            subdomains: 'abc',
-            minZoom: 0,
-            maxZoom: 19,
         }).addTo(map);
         // إضافة زر تكبير/تصغير مخصص
         L.control.zoom({
@@ -674,28 +664,37 @@ notificationHandler.initialize().catch(console.error);
     }
 
     function updateUserLocation(position) {
-    try {
-        const { latitude, longitude } = position.coords;
-        const newLocation = { lat: latitude, lng: longitude };
-        
-        if (!userLocation || 
-            Math.abs(newLocation.lat - userLocation.lat) > 0.0001 || 
-            Math.abs(newLocation.lng - userLocation.lng) > 0.0001) {
-            
+        const newLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+        };
+
+        // تحقق إذا تغير الموقع بما يكفي لتحديث الخريطة
+        if (!userLocation || Math.abs(newLocation.lat - userLocation.lat) > 0.0001 || Math.abs(newLocation.lng - userLocation.lng) > 0.0001) {
             userLocation = newLocation;
-            if (map) {
-                if (!userMarker) {
-                    // إنشاء علامة جديدة
-                } else {
-                    userMarker.setLatLng([userLocation.lat, userLocation.lng]);
-                }
-                map.setView([userLocation.lat, userLocation.lng], map.getZoom());
+
+            // تحديث علامة المستخدم فقط إذا تغير الموقع
+            const userIcon = L.divIcon({
+                html: '<i class="fas fa-user-circle fa-5x" style="color: #007bff;"></i>',
+                className: 'user-marker',
+                iconSize: [30, 30],
+            });
+
+            if (!userMarker) {
+                userMarker = L.marker([userLocation.lat, userLocation.lng], { icon: userIcon })
+                    .bindPopup('موقعك الحالي')
+                    .addTo(map);
+            } else {
+                userMarker.setLatLng([userLocation.lat, userLocation.lng]);
             }
+
+            // تحديث الخريطة مرة واحدة فقط
+            map.setView([userLocation.lat, userLocation.lng], 13);
+
+            // تحميل السائقين إذا كان الموقع جديدًا
+            loadDrivers();
         }
-    } catch (error) {
-        console.error('Error updating user location:', error);
     }
-}
 
 
     // قاموس يحتوي على إحداثيات المحافظات والمناطق العراقية
@@ -1722,18 +1721,12 @@ notificationHandler.initialize().catch(console.error);
         });
     }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-    try {
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize map if not already initialized
         if (!window.mapInitialized) {
             window.mapInitialized = true;
-            await initMap();
+            initMap();
         }
-        loadDrivers();
-    } catch (error) {
-        console.error('Error initializing map:', error);
-        showToast('حدث خطأ في تحميل الخريطة', 'error');
-    }
-});
 
         // Add click handlers for location chips
         const locationChips = document.querySelectorAll('.location-chip');
@@ -2744,20 +2737,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 if (!firebase.apps.length) {
-    try {
-        firebase.initializeApp(firebaseConfig);
-        // إضافة معالجة الأخطاء عند فشل الاتصال
-        firebase.database().ref().child('.info/connected').on('value', function(connectedSnap) {
-            if (connectedSnap.val() === true) {
-                console.log('Connected to Firebase');
-            } else {
-                console.log('Not connected to Firebase');
-            }
-        });
-    } catch (error) {
-        console.error("Firebase initialization error:", error);
-    }
-}
+    firebase.initializeApp(firebaseConfig);
+  }
 
 
   function getAllDrivers() {
@@ -2952,64 +2933,3 @@ function addTestButton() {
 
 // تشغيل الاختبار عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', addTestButton);
-
-// supabase-init.js
-import { createClient } from '@supabase/supabase-js'
-
-// تكوين Supabase - قم بتغيير هذه القيم بقيم مشروعك على Supabase
-const supabaseUrl = 'YOUR_SUPABASE_URL'
-const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'
-
-// إنشاء عميل Supabase
-const supabase = createClient(supabaseUrl, supabaseKey)
-
-// دالة للتحقق من حالة الاتصال
-export const checkConnection = async () => {
-    try {
-        const { data, error } = await supabase
-            .from('drivers')
-            .select('count')
-            .single()
-        
-        if (error) throw error
-        console.log('Connected to Supabase successfully')
-        return true
-    } catch (error) {
-        console.error('Supabase connection error:', error.message)
-        return false
-    }
-}
-
-// تصدير عميل Supabase للاستخدام في بقية التطبيق
-export default supabase
-
-// المراقبة في الوقت الفعلي للسائقين
-export const setupRealtimeDrivers = (callback) => {
-    const subscription = supabase
-        .channel('public:drivers')
-        .on('postgres_changes', 
-            { event: '*', schema: 'public', table: 'drivers' },
-            (payload) => callback(payload)
-        )
-        .subscribe()
-
-    return subscription
-}
-
-// إعداد المراقبة في الوقت الفعلي للمحادثات
-export const setupRealtimeChat = (userId, driverId, callback) => {
-    const subscription = supabase
-        .channel('public:messages')
-        .on('postgres_changes',
-            {
-                event: '*',
-                schema: 'public',
-                table: 'messages',
-                filter: `user_id=eq.${userId},driver_id=eq.${driverId}`
-            },
-            (payload) => callback(payload)
-        )
-        .subscribe()
-
-    return subscription
-}

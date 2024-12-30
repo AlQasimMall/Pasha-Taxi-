@@ -56,8 +56,6 @@
     <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <!-- أضف هذا قبل script.js -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
@@ -71,7 +69,7 @@
 
     <!-- App Scripts -->
 
- <script src="firebase-messaging-sw.js"></script>
+ <script src="firebase-messaging-sw.js></script>
  
  <script src=" script.js"></script>
  
@@ -574,7 +572,19 @@
         </div>
     </div>
 </div>
-
+<!-- أضف هذا في ملف index.html -->
+<div class="notification-test-panel position-fixed bottom-0 end-0 m-3 p-3 bg-white rounded shadow">
+    <h6>اختبار الإشعارات</h6>
+    <div class="d-grid gap-2">
+        <button onclick="testNotificationPermission()" class="btn btn-primary">
+            <i class="fas fa-bell me-2"></i>طلب إذن الإشعارات
+        </button>
+        <button onclick="testNotificationDelivery()" class="btn btn-success">
+            <i class="fas fa-paper-plane me-2"></i>إرسال إشعار تجريبي
+        </button>
+    </div>
+    <div id="notificationStatus" class="mt-2 small text-muted"></div>
+</div>
 
 <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -983,8 +993,7 @@
 </script>
 </main>
 <!-- ربط ملف الجافا سكريبت -->
-<script src="/Pasha-taxi/firebase-config.js"></script>
-<script src="/Pasha-taxi/script.js"></script>
+<script src="app.js"></script>
 
 </body>
 
