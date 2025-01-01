@@ -1,7 +1,7 @@
 {
   "name": "تاكسي العراق",
   "short_name": "تاكسي العراق",
-  "start_url": "/Pasha-taxi/index.html",
+  "start_url": "/Pasha-taxi-/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#FFD700",
@@ -53,7 +53,7 @@
   "shortcuts": [
     {
       "name": "البحث عن سائق",
-      "url": "/Pasha-taxi/search",
+      "url": "/Pasha-taxi-/search",
       "icons": [
         {
           "src": "https://firebasestorage.googleapis.com/v0/b/messageemeapp.appspot.com/o/driver-images%2F7605a607-6cf8-4b32-aee1-fa7558c98452.png?alt=media&token=5cf9e67c-ba6e-4431-a6a0-79dede15b527",
@@ -73,7 +73,7 @@
     "geolocation"
   ],
   "serviceworker": {
-    "src": "/Pasha-taxi/firebase-messaging-sw.js",
-    "scope": "/Pasha-taxi/"
+    "src": "/Pasha-taxi-/firebase-messaging-sw.js",
+    "scope": "/Pasha-taxi-/"
   }
 }
