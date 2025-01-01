@@ -27,15 +27,16 @@ class NotificationHandler {
 
 async initialize() {
     try {
-        // محاولة تسجيل Service Worker
         if ('serviceWorker' in navigator) {
-          this.swRegistration = await navigator.serviceWorker.register('https://alqasimmall.github.io/Pasha-taxi-/firebase-messaging-sw.js', {
-            scope: '/Pasha-taxi-/'
-        });
-        
-            console.log('Service Worker registered successfully:', this.swRegistration);
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/Pasha-Taxi-/firebase-messaging-sw.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered successfully');
+                }).catch(function(err) {
+                    console.error('Service Worker registration failed:', err);
+                });
+            });
         }
-
         await this.checkNotificationSupport();
         await this.requestPermission();
         await this.setupMessaging();
