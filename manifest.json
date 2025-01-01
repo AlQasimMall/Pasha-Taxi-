@@ -1,12 +1,12 @@
 {
   "name": "تاكسي العراق",
   "short_name": "تاكسي العراق",
-  "start_url": "/Pasha-taxi-/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#FFD700",
   "orientation": "portrait-primary",
-  "gcm_sender_id": "255034474844",
+ 
   "description": "خدمة حجز سيارات الأجرة الأفضل في العراق",
   "categories": ["travel", "transportation"],
   "lang": "ar",
