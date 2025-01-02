@@ -459,15 +459,10 @@ body {
         font-size: 1.2rem;
     }
 
-  .tools .nav-link i {
-    color: #FFD700;
-    font-size: 1.2rem;
+    .tools .nav-link i {
+        font-size: 1rem;
+    }
 }
-
-.tools .nav-link:hover i {
-    color: #FFFFFF; /* Change to white on hover for better visibility */
-}
-
 
 .account-type-card {
     background-color: #000000;
@@ -2651,6 +2646,10 @@ body {
     z-index: 1000;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
+.notification-toast {
+    color: #FFD700 !important;
+}
+
 
 .notification-toast h4 {
     color: #FFD700; /* Bright title color */
