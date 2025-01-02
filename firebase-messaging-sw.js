@@ -1,7 +1,23 @@
 // Import Firebase scripts
 importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js');
+// Import the NotificationManager
+import NotificationManager from './NotificationManager';
 
+// Initialize when document is ready
+document.addEventListener('DOMContentLoaded', async () => {
+    // Create notification manager instance
+    const notificationManager = new NotificationManager();
+    
+    // Initialize notifications for new users
+    await notificationManager.initializeForNewUser();
+
+    // Remove the test button as it's no longer needed
+    const testButton = document.querySelector('.btn-primary[onclick*="testNotifications"]');
+    if (testButton) {
+        testButton.remove();
+    }
+});
 // Firebase configuration
 firebase.initializeApp({
     apiKey: "AIzaSyDGpAHia_wEmrhnmYjrPf1n1TrAzwEMiAI",

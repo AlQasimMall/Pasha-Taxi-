@@ -16,6 +16,105 @@
     const database = firebase.database();
     const storage = firebase.storage();
     const messaging = firebase.messaging();
+    
+    class NotificationManager {
+    constructor() {
+        this.STORAGE_KEY = 'notification_prompt_shown';
+        this.messaging = firebase.messaging();
+    }
+
+    // Check if notification prompt has been shown before
+    hasPromptBeenShown() {
+        return localStorage.getItem(this.STORAGE_KEY) === 'true';
+    }
+
+    // Mark notification prompt as shown
+    markPromptAsShown() {
+        localStorage.setItem(this.STORAGE_KEY, 'true');
+    }
+
+    // Initialize notifications for first-time users
+    async initializeForNewUser() {
+        // If prompt has been shown before, don't show again
+        if (this.hasPromptBeenShown()) {
+            return;
+        }
+
+        try {
+            // Check if notifications are supported
+            if (!('Notification' in window)) {
+                console.log('This browser does not support notifications');
+                return;
+            }
+
+            // Show custom prompt to user
+            const userChoice = await this.showCustomPrompt();
+            
+            if (userChoice) {
+                // Request permission
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    // Get FCM token
+                    const token = await this.messaging.getToken({
+                        vapidKey: 'BI9cpoewcZa1ftyZ_bGjO0GYa4_cT0HNja4YFd6FwLwHg5c0gQ5iSj_MJZRhMxKdgJ0-d-_rEXcpSQ_cx7GqCSc'
+                    });
+
+                    // Save token to database
+                    await this.saveTokenToDatabase(token);
+                }
+            }
+
+            // Mark prompt as shown regardless of user choice
+            this.markPromptAsShown();
+
+        } catch (error) {
+            console.error('Error initializing notifications:', error);
+        }
+    }
+
+    // Show custom prompt using SweetAlert2
+    showCustomPrompt() {
+        return Swal.fire({
+            title: 'تفعيل التنبيهات',
+            html: `
+                <div class="notification-prompt">
+                    <img src="/pngwing.com.png" alt="Notifications Icon" style="width: 64px; margin-bottom: 1rem;">
+                    <p>هل تود تلقي تنبيهات عن السائقين القريبين منك وحالة رحلاتك؟</p>
+                </div>
+            `,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#FFD700',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'نعم، تفعيل التنبيهات',
+            cancelButtonText: 'لا، شكراً',
+            allowOutsideClick: false
+        }).then((result) => {
+            return result.isConfirmed;
+        });
+    }
+
+    // Save FCM token to database
+    async saveTokenToDatabase(token) {
+        const userId = localStorage.getItem('userId') || 'anonymous';
+        try {
+            await firebase.database().ref(`fcm_tokens/${userId}`).set({
+                token: token,
+                lastUpdated: firebase.database.ServerValue.TIMESTAMP,
+                device: {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform
+                }
+            });
+        } catch (error) {
+            console.error('Error saving token:', error);
+        }
+    }
+}
+
+// Export the class
+export default NotificationManager;
 
     // Request notification permission
     // Enhanced notification handling
@@ -90,94 +189,7 @@ async initialize() {
     }
 }
 
-  async saveTokenToDatabase(token) {
-      if (!userId) return;
-      
-      try {
-          await database.ref('tokens/' + userId).set({ token: token });
-      } catch (error) {
-          console.error('Error saving token:', error);
-      }
-  }
-
-  setupMessageHandler() {
-      this.messaging.onMessage((payload) => {
-          this.showNotification(payload);
-      });
-  }
-
-  showNotification(payload) {
-      if (!this.hasPermission) return;
-
-      try {
-          // Try using the Notification API
-          new Notification(payload.notification.title, {
-              body: payload.notification.body,
-              icon: payload.notification.icon || '/default-icon.png',
-              badge: '/badge-icon.png',
-              tag: payload.data?.notificationId || 'default',
-              data: payload.data
-          });
-      } catch (error) {
-          // Fallback to custom toast notification
-          this.showCustomToast(payload.notification);
-      }
-  }
-
-  showCustomToast(notification) {
-      const toast = document.createElement('div');
-      toast.className = 'notification-toast animate__animated animate__fadeInRight';
-      toast.innerHTML = `
-          <div class="notification-content">
-              <h4>${notification.title}</h4>
-              <p>${notification.body}</p>
-          </div>
-          <button onclick="this.parentElement.remove()" class="close-btn">&times;</button>
-      `;
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-          toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight');
-          setTimeout(() => toast.remove(), 300);
-      }, 5000);
-  }
-
-  handlePermissionError(error) {
-      let message;
-      
-      switch(error.message) {
-          case 'notification_blocked':
-              message = 'التنبيهات محظورة. يرجى تفعيلها من إعدادات المتصفح';
-              this.showPermissionInstructions();
-              break;
-          case 'notification_dismissed':
-              message = 'لم يتم منح إذن التنبيهات. يمكنك تفعيلها لاحقاً من الإعدادات';
-              break;
-          default:
-              message = 'حدث خطأ في إعداد التنبيهات';
-      }
-      
-      showToast(message, 'warning');
-  }
-
-  showPermissionInstructions() {
-      Swal.fire({
-          title: 'تفعيل التنبيهات',
-          html: `
-              <div class="permission-instructions">
-                  <p>لتلقي التنبيهات، يرجى اتباع الخطوات التالية:</p>
-                  <ol>
-                      <li>انقر على أيقونة القفل في شريط العنوان</li>
-                      <li>ابحث عن إعدادات "التنبيهات"</li>
-                      <li>قم بتغيير الإعداد إلى "السماح"</li>
-                  </ol>
-              </div>
-          `,
-          icon: 'info',
-          confirmButtonText: 'فهمت'
-      });
-  }
-}
+  
 
 // Initialize notifications
 const notificationHandler = new NotificationHandler();
