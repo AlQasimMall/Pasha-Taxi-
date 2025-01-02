@@ -435,8 +435,14 @@ body {
 }
 
 .tools .nav-link i {
+    color: #FFD700;
     font-size: 1.2rem;
 }
+
+.tools .nav-link:hover i {
+    color: #FFFFFF; /* Change to white on hover for better visibility */
+}
+
 
 /* تحسين التناسق على الشاشات الصغيرة */
 @media (max-width: 768px) {
@@ -453,10 +459,15 @@ body {
         font-size: 1.2rem;
     }
 
-    .tools .nav-link i {
-        font-size: 1rem;
-    }
+  .tools .nav-link i {
+    color: #FFD700;
+    font-size: 1.2rem;
 }
+
+.tools .nav-link:hover i {
+    color: #FFFFFF; /* Change to white on hover for better visibility */
+}
+
 
 .account-type-card {
     background-color: #000000;
@@ -2628,48 +2639,40 @@ body {
 
 /* Notification Styles */
 .notification-toast {
+    background-color: #1a1a1a; /* Dark background */
+    color: #FFD700; /* Bright text color */
+    border: 2px solid #FFD700;
+    border-radius: 10px;
+    padding: 10px 20px;
+    max-width: 300px;
     position: fixed;
     top: 20px;
     right: 20px;
-    background: #000000;
-    border: 2px solid #FFD700;
-    border-radius: 10px;
-    padding: 15px;
-    min-width: 300px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    z-index: 9999;
-    color: #FFFFFF;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.notification-content {
-    margin-right: 20px;
-}
-
-.notification-title {
-    font-weight: bold;
-    color: #FFD700;
+.notification-toast h4 {
+    color: #FFD700; /* Bright title color */
     margin-bottom: 5px;
 }
 
-.notification-body {
-    font-size: 0.9rem;
+.notification-toast p {
+    color: #FFFFFF; /* Bright body color */
 }
 
-.notification-close {
-    position: absolute;
-    top: 5px;
-    right: 5px;
+.notification-toast .close-btn {
     background: none;
     border: none;
     color: #FFD700;
-    font-size: 1.2rem;
+    font-size: 16px;
     cursor: pointer;
-    padding: 0 5px;
 }
 
-.notification-close:hover {
-    color: #FFF;
+.notification-toast .close-btn:hover {
+    color: #FFFFFF;
 }
+
 
 @keyframes fadeInRight {
     from {
