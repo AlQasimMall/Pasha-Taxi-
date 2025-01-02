@@ -142,43 +142,6 @@ async initialize() {
       }, 5000);
   }
 
-  handlePermissionError(error) {
-      let message;
-      
-      switch(error.message) {
-          case 'notification_blocked':
-              message = 'التنبيهات محظورة. يرجى تفعيلها من إعدادات المتصفح';
-              this.showPermissionInstructions();
-              break;
-          case 'notification_dismissed':
-              message = 'لم يتم منح إذن التنبيهات. يمكنك تفعيلها لاحقاً من الإعدادات';
-              break;
-          default:
-              message = 'حدث خطأ في إعداد التنبيهات';
-      }
-      
-      showToast(message, 'warning');
-  }
-
-  showPermissionInstructions() {
-      Swal.fire({
-          title: 'تفعيل التنبيهات',
-          html: `
-              <div class="permission-instructions">
-                  <p>لتلقي التنبيهات، يرجى اتباع الخطوات التالية:</p>
-                  <ol>
-                      <li>انقر على أيقونة القفل في شريط العنوان</li>
-                      <li>ابحث عن إعدادات "التنبيهات"</li>
-                      <li>قم بتغيير الإعداد إلى "السماح"</li>
-                  </ol>
-              </div>
-          `,
-          icon: 'info',
-          confirmButtonText: 'فهمت'
-      });
-  }
-}
-
 // Initialize notifications
 const notificationHandler = new NotificationHandler();
 notificationHandler.initialize().catch(console.error);
