@@ -189,7 +189,94 @@ async initialize() {
     }
 }
 
-  
+  async saveTokenToDatabase(token) {
+      if (!userId) return;
+      
+      try {
+          await database.ref('tokens/' + userId).set({ token: token });
+      } catch (error) {
+          console.error('Error saving token:', error);
+      }
+  }
+
+  setupMessageHandler() {
+      this.messaging.onMessage((payload) => {
+          this.showNotification(payload);
+      });
+  }
+
+  showNotification(payload) {
+      if (!this.hasPermission) return;
+
+      try {
+          // Try using the Notification API
+          new Notification(payload.notification.title, {
+              body: payload.notification.body,
+              icon: payload.notification.icon || '/default-icon.png',
+              badge: '/badge-icon.png',
+              tag: payload.data?.notificationId || 'default',
+              data: payload.data
+          });
+      } catch (error) {
+          // Fallback to custom toast notification
+          this.showCustomToast(payload.notification);
+      }
+  }
+
+  showCustomToast(notification) {
+      const toast = document.createElement('div');
+      toast.className = 'notification-toast animate__animated animate__fadeInRight';
+      toast.innerHTML = `
+          <div class="notification-content">
+              <h4>${notification.title}</h4>
+              <p>${notification.body}</p>
+          </div>
+          <button onclick="this.parentElement.remove()" class="close-btn">&times;</button>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+          toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight');
+          setTimeout(() => toast.remove(), 300);
+      }, 5000);
+  }
+
+  handlePermissionError(error) {
+      let message;
+      
+      switch(error.message) {
+          case 'notification_blocked':
+              message = 'التنبيهات محظورة. يرجى تفعيلها من إعدادات المتصفح';
+              this.showPermissionInstructions();
+              break;
+          case 'notification_dismissed':
+              message = 'لم يتم منح إذن التنبيهات. يمكنك تفعيلها لاحقاً من الإعدادات';
+              break;
+          default:
+              message = 'حدث خطأ في إعداد التنبيهات';
+      }
+      
+      showToast(message, 'warning');
+  }
+
+  showPermissionInstructions() {
+      Swal.fire({
+          title: 'تفعيل التنبيهات',
+          html: `
+              <div class="permission-instructions">
+                  <p>لتلقي التنبيهات، يرجى اتباع الخطوات التالية:</p>
+                  <ol>
+                      <li>انقر على أيقونة القفل في شريط العنوان</li>
+                      <li>ابحث عن إعدادات "التنبيهات"</li>
+                      <li>قم بتغيير الإعداد إلى "السماح"</li>
+                  </ol>
+              </div>
+          `,
+          icon: 'info',
+          confirmButtonText: 'فهمت'
+      });
+  }
+}
 
 // Initialize notifications
 const notificationHandler = new NotificationHandler();
