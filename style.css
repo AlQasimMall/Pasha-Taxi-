@@ -1,20 +1,249 @@
+/* تحديد المتغيرات الأساسية للألوان في التطبيق */
+/* متغيرات النظام */
 :root {
-    --primary-color: #FFD700;
-    --secondary-color: #1a1a1a;
-    --accent-color: #FF4136;
+    /* الألوان الأساسية */
+    --primary-color: #FFD700;          /* ذهبي أساسي */
+    --primary-dark: #ccac00;           /* ذهبي داكن */
+    --primary-light: #ffe44d;          /* ذهبي فاتح */
+    
+    /* درجات الخلفية */
+    --bg-dark: #000000;                /* أسود */
+    --bg-medium: #1a1a1a;              /* رمادي داكن */
+    --bg-light: #242424;               /* رمادي فاتح */
+    --bg-lighter: #333333;             /* رمادي أفتح */
+    
+    /* ألوان النصوص */
+    --text-primary: #FFFFFF;           /* أبيض */
+    --text-secondary: #FFD700;         /* ذهبي */
+    --text-muted: rgba(255, 255, 255, 0.7);
+    
+    /* ألوان الحالة */
     --success-color: #2ECC40;
+    --warning-color: #FF851B;
+    --danger-color: #FF4136;
     --info-color: #39CCCC;
+    
+    /* الظلال والتأثيرات */
     --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --hover-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* أبعاد العناصر */
+    --border-radius-sm: 8px;
+    --border-radius-md: 15px;
+    --border-radius-lg: 20px;
+    --border-radius-xl: 25px;
 }
 
+/* تنسيقات عامة */
 body {
-    margin: 1;
-    padding: 1;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    color: #FFFFFF;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* النصوص والعناصر الرئيسية */
+.text-primary { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-muted { color: var(--text-muted) !important; }
+
+/* البطاقات */
+.card {
+    background-color: var(--bg-medium);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+/* النماذج والإدخالات */
+.form-control,
+.form-select {
+    background-color: var(--bg-lighter);
+    border: 1px solid var(--primary-color);
+    color: var(--text-primary);
+    border-radius: var(--border-radius-sm);
+    padding: 0.75rem 1rem;
+    transition: var(--transition);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--bg-medium);
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.15);
+}
+
+/* الأزرار */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--bg-dark);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: var(--hover-shadow);
+}
+
+/* حالة السائق */
+.driver-status {
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-xl);
+    font-weight: 500;
+}
+
+.status-active {
+    background-color: rgba(46, 204, 64, 0.1);
+    color: var(--success-color);
+}
+
+.status-inactive {
+    background-color: rgba(255, 65, 54, 0.1);
+    color: var(--danger-color);
+}
+
+/* بطاقة نوع الحساب */
+.account-type-card {
+    background-color: var(--bg-light);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.account-type-card:hover {
+    background-color: var(--bg-medium);
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+.account-type-card .icon-container {
+    background-color: var(--primary-color);
+    color: var(--bg-dark);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+/* الشريط الجانبي */
+.side-nav {
+    position: fixed;
+    top: var(--side-nav-height-top);
+    bottom: var(--side-nav-height-bottom);
+    right: 0;
+    height: calc(100% - var(--side-nav-height-top) - var(--side-nav-height-bottom));
+    width: var(--side-nav-width);
+    background: var(--bg-dark);  /* تغيير لون الخلفية إلى أسود */
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 9999;
+    box-shadow: var(--card-shadow);
+    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
+    border-left: 2px solid var(--primary-color);
+}
+
+.side-nav.open {
+    transform: translateX(0);
+}
+
+.side-nav-header {
+    padding: 20px;
+    background: var(--bg-dark);
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.side-nav-title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.side-nav-items {
+    padding: 1rem;
+}
+
+.side-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 0.5rem;
+    transition: var(--transition);
+}
+
+.side-nav-item:hover {
+    background: var(--bg-medium);
+    color: var(--primary-color);
+}
+
+.side-nav-item i {
+    margin-left: 1rem;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+/* النوافذ المنبثقة */
+.modal-content {
+    background-color: var(--bg-medium);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius-lg);
+}
+
+.modal-header {
+    background-color: var(--bg-dark);
+    border-bottom: 2px solid var(--primary-color);
+    padding: 1.5rem;
+}
+
+.modal-title {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* تحسينات للشاشات الصغيرة */
+@media (max-width: 768px) {
+    .container {
+        padding: 0.5rem;
+    }
+    
+    .account-type-card {
+        padding: 1.5rem;
+    }
+    
+    .icon-container {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .btn-primary {
+        padding: 0.5rem 1.5rem;
+    }
+}
+
+/* تنسيق النصوص والعناصر الرئيسية */
 .driver-name,
 .driver-info:not(.location-chip):not(.driver-status),
 .driver-bio,
@@ -30,52 +259,54 @@ body {
 .registration-section,
 .form-label,
 .modal-body p {
-    color: #FFFFFF !important;
+    color: #FFFFFF !important;  /* جعل كل النصوص بيضاء */
 }
 
-/* Preserve original location chip styles */
+/* تنسيق شريحة الموقع */
 .location-chip {
-    background-color: #000000 !important;
-    border: 2px solid #FFD700 !important;
-    color: #FFFFFF !important;
+    background-color: #000000 !important;  /* خلفية سوداء */
+    border: 2px solid #FFD700 !important;  /* حدود ذهبية */
+    color: #FFFFFF !important;  /* نص أبيض */
 }
 
+/* تأثير التحويم والتنشيط لشريحة الموقع */
 .location-chip:hover,
 .location-chip.active {
     background-color: #1a1a1a !important;
-    color: #FFFFFF !important;
     border-color: #FFD700 !important;
 }
 
+/* أيقونات شريحة الموقع */
 .location-chip i {
-    color: #FFD700 !important;
+    color: #FFD700 !important;  /* لون ذهبي للأيقونات */
 }
 
-/* Preserve driver status styles */
+/* حالة السائق */
 .driver-status {
     background: rgba(255, 255, 255, 0.8) !important;
 }
 
 .status-active {
-    color: var(--success-color) !important;
+    color: var(--success-color) !important;  /* لون أخضر للحالة النشطة */
 }
 
 .status-inactive {
-    color: var(--accent-color) !important;
+    color: var(--accent-color) !important;  /* لون أحمر للحالة غير النشطة */
 }
 
-/* Additional preservation rules for specific components */
+/* تنسيق حقول الإدخال والبحث */
 .search-input,
 .form-control {
-    color: #000000 !important;
+    color: #000000 !important;  /* نص أسود لسهولة القراءة */
 }
 
+/* حدود النوافذ المنبثقة */
 .modal-header,
 .modal-footer {
     border-color: rgba(255, 215, 0, 0.2) !important;
 }
 
-/* Keep original colors for action buttons */
+/* أزرار الإجراءات */
 .action-btn.primary {
     background: var(--primary-color) !important;
     color: var(--secondary-color) !important;
@@ -86,7 +317,7 @@ body {
     color: var(--primary-color) !important;
 }
 
-/* Registration Modal Styles */
+/* تنسيق نافذة التسجيل */
 .modal-content {
     background-color: #1a1a1a !important;
     border: 2px solid #FFD700 !important;
@@ -94,12 +325,13 @@ body {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
+/* عنوان النافذة المنبثقة */
 .modal-header {
     background-color: #000000 !important;
     border-bottom: 2px solid #FFD700 !important;
-    padding: 1.5rem;
 }
 
+/* العنوان */
 .modal-title {
     color: #FFD700 !important;
     font-size: 1.5rem;
@@ -107,103 +339,93 @@ body {
     text-align: center;
 }
 
+/* زر الإغلاق */
 .btn-close {
     color: #FFD700 !important;
     opacity: 1 !important;
-    filter: brightness(0) invert(1) sepia(1) saturate(10000%) hue-rotate(300deg);
 }
 
+/* قسم التسجيل */
 .registration-section {
     background-color: #242424 !important;
     border: 1px solid #FFD700 !important;
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
 }
 
+/* عنوان القسم */
 .section-title {
     color: #FFD700 !important;
     border-bottom: 2px solid #FFD700;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    font-weight: bold;
 }
 
-/* Form Controls */
-.form-label {
-    color: #FFFFFF !important;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
+/* تنسيق النماذج والمدخلات */
 .form-control,
 .form-select {
     background-color: #333333 !important;
     border: 1px solid #FFD700 !important;
     color: #FFFFFF !important;
-    border-radius: 10px;
 }
 
+/* حالة التركيز للمدخلات */
 .form-control:focus,
 .form-select:focus {
     background-color: #444444 !important;
     border-color: #FFD700 !important;
     box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25) !important;
-    color: #FFFFFF !important;
 }
 
-.form-control::placeholder {
-    color: rgba(255, 255, 255, 0.6) !important;
-}
-
-/* Upload Containers */
-.user-photo-upload,
-.driver-photo-upload {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    border: 2px dashed #FFD700 !important;
-    background-color: #242424 !important;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.upload-placeholder {
-    text-align: center;
-    color: #FFD700 !important;
-}
-
-.upload-placeholder i {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: #FFD700 !important;
-}
-
-/* Terms Checkbox */
-.form-check-label {
-    color: #FFFFFF !important;
-}
-
-.form-check-input {
-    border-color: #FFD700 !important;
-}
-
-.form-check-input:checked {
-    background-color: #FFD700 !important;
-    border-color: #FFD700 !important;
-}
-
-/* Submit Button */
+/* تنسيق الأزرار الرئيسية */
 .btn-primary {
     background-color: #FFD700 !important;
-    border-color: #FFD700 !important;
     color: #000000 !important;
     font-weight: bold;
-    padding: 0.75rem 2rem;
-    border-radius: 10px;
-    transition: all 0.3s ease;
 }
 
+/* تأثير التحويم للأزرار */
+.btn-primary:hover {
+    background-color: #ccac00 !important;
+    transform: translateY(-2px);
+}
+
+/* بطاقات نوع الحساب */
+.account-type-card {
+    background-color: #242424 !important;
+    border: 2px solid #FFD700 !important;
+}
+
+/* تأثير التحويم لبطاقات نوع الحساب */
+.account-type-card:hover {
+    background-color: #333333 !important;
+    transform: translateY(-5px);
+}
+
+/* حاوية الأيقونات */
+.icon-container {
+    background-color: #FFD700 !important;
+}
+
+.icon-container i {
+    color: #000000 !important;
+}
+
+/* تنسيق منطقة رفع المستندات */
+.document-upload {
+    border: 2px dashed #FFD700 !important;
+    background-color: #242424 !important;
+}
+
+/* تأثير التحويم لمنطقة رفع المستندات */
+.document-upload:hover {
+    background-color: #333333 !important;
+}
+
+/* الروابط داخل النوافذ */
+.modal-body a {
+    color: #FFD700 !important;
+}
+
+.modal-body a:hover {
+    color: #ccac00 !important;
+}
 .btn-primary:hover {
     background-color: #ccac00 !important;
     border-color: #ccac00 !important;
@@ -435,14 +657,8 @@ body {
 }
 
 .tools .nav-link i {
-    color: #FFD700;
     font-size: 1.2rem;
 }
-
-.tools .nav-link:hover i {
-    color: #FFFFFF; /* Change to white on hover for better visibility */
-}
-
 
 /* تحسين التناسق على الشاشات الصغيرة */
 @media (max-width: 768px) {
@@ -2000,7 +2216,7 @@ body {
 }
 
 .side-nav-close:hover {
-    background: rgba(255, 215, 0, 0.1);
+    background: rgb(255, 255, 254);
 }
 
 .side-nav-items {
@@ -2153,9 +2369,9 @@ body {
     /* تقويس الحواف */
     --side-nav-bg-color: var(--secondary-color);
     /* لون خلفية الشريط */
-    --side-nav-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+    --side-nav-shadow: -2px 0 10px rgba(0, 0, 0, 0);
     /* ظل الشريط */
-    --backdrop-bg-color: rgba(252, 252, 252, 0);
+    --backdrop-bg-color: rgba(15, 14, 14, 0.697);
     /* لون خلفية التمويه */
 }
 
@@ -2634,44 +2850,48 @@ body {
 
 /* Notification Styles */
 .notification-toast {
-    background-color: #1a1a1a; /* Dark background */
-    color: #FFD700; /* Bright text color */
-    border: 2px solid #FFD700;
-    border-radius: 10px;
-    padding: 10px 20px;
-    max-width: 300px;
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-.notification-toast {
-    color: #FFD700 !important;
-}
-
-
-.notification-toast h4 {
-    color: #FFD700; /* Bright title color */
-    margin-bottom: 5px;
-}
-
-.notification-toast p {
-    color: #FFFFFF; /* Bright body color */
-}
-
-.notification-toast .close-btn {
-    background: none;
-    border: none;
-    color: #FFD700;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.notification-toast .close-btn:hover {
+    background: #000000;
+    border: 2px solid #FFD700;
+    border-radius: 10px;
+    padding: 15px;
+    min-width: 300px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
     color: #FFFFFF;
 }
 
+.notification-content {
+    margin-right: 20px;
+}
+
+.notification-title {
+    font-weight: bold;
+    color: #FFD700;
+    margin-bottom: 5px;
+}
+
+.notification-body {
+    font-size: 0.9rem;
+}
+
+.notification-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    color: #FFD700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.notification-close:hover {
+    color: #FFF;
+}
 
 @keyframes fadeInRight {
     from {
