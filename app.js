@@ -1,6 +1,4 @@
-
-
-    const firebaseConfig = {
+ const firebaseConfig = {
         apiKey: "AIzaSyDGpAHia_wEmrhnmYjrPf1n1TrAzwEMiAI",
         authDomain: "messageemeapp.firebaseapp.com",
         databaseURL: "https://messageemeapp-default-rtdb.firebaseio.com",
@@ -27,16 +25,15 @@ class NotificationHandler {
 
 async initialize() {
     try {
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/Pasha-Taxi-/firebase-messaging-sw.js')
-                .then(function(registration) {
-                    console.log('Service Worker registered successfully');
-                }).catch(function(err) {
-                    console.error('Service Worker registration failed:', err);
-                });
-            });
-        }
+        // محاولة تسجيل Service Worker
+       // يجب تحديث جميع المسارات لتتضمن /Al-Pasha/
+// مثلاً في ملف firebase-messaging-sw.js
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./firebase-messaging-sw.js', {
+        scope: './'
+    })
+}
+
         await this.checkNotificationSupport();
         await this.requestPermission();
         await this.setupMessaging();
@@ -2313,6 +2310,27 @@ notificationHandler.initialize().catch(console.error);
             grid.appendChild(card);
         });
     }
+    document.addEventListener('DOMContentLoaded', function() {
+        // التأكد من تحميل Firebase
+        if (typeof firebase !== 'undefined') {
+            // تهيئة Firebase
+            firebase.initializeApp(firebaseConfig);
+            
+            // بدء تحميل البيانات
+            loadDrivers();
+            
+            // تهيئة الخريطة
+            if (!window.mapInitialized) {
+                window.mapInitialized = true;
+                initMap();
+            }
+        } else {
+            console.error('Firebase not loaded');
+        }
+    });
+
+
+
 
     document.addEventListener('DOMContentLoaded', function () {
         displayAllDrivers(); // استدعاء الدالة التي تعرض جميع السائقين
@@ -2614,7 +2632,7 @@ class LocationNotificationSystem {
         document.body.appendChild(toast);
 
         // تشغيل صوت الإشعار
-        const audio = new Audio('/https://github.com/AlQasimMall/Pasha-taxi-/blob/main/%D8%A7%D9%84%D9%87%D8%A7%D8%AA%D9%81-%D8%A7%D9%84%D8%AB%D8%A7%D8%A8%D8%AA.mp3');
+        const audio = new Audio('/https://github.com/AlQasimMall/Al-Pasha/blob/main/%D8%A7%D9%84%D9%87%D8%A7%D8%AA%D9%81-%D8%A7%D9%84%D8%AB%D8%A7%D8%A8%D8%AA.mp3');
         audio.play().catch(error => console.log('Could not play notification sound:', error));
 
         // إزالة الإشعار بعد 5 ثواني
@@ -2667,169 +2685,185 @@ class LocationNotificationSystem {
 // إنشاء نسخة عامة من نظام الإشعارات
 const locationNotificationSystem = new LocationNotificationSystem();
 
-// دوال مساعدة للتعامل مع الإشعارات
-async function requestNotificationPermission() {
-    if ('Notification' in window) {
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-            showToast('تم تفعيل الإشعارات بنجاح');
-        } else {
-            showToast('لم يتم السماح بالإشعارات', 'warning');
-        }
+// نظام الإشعارات المحسن
+// نظام الإشعارات المحسن
+class NotificationSystem {
+    constructor() {
+        this.container = this.createContainer();
+        this.notifications = new Set();
+        this.initialize();
     }
-}
 
-// تحديث دالة قبول الرحلة
-async function acceptTrip(tripId, driverId) {
-    try {
-        showLoading();
-
-        // تحديث حالة الرحلة
-        await database.ref(`trips/${tripId}`).update({
-            status: 'active',
-            acceptedAt: firebase.database.ServerValue.TIMESTAMP
-        });
-
-        // بدء تتبع موقع السائق
-        const watchId = locationNotificationSystem.startDriverLocationUpdates(driverId);
-
-        if (watchId) {
-            localStorage.setItem(`watchId_${tripId}`, watchId);
-            showToast('تم قبول الرحلة وبدء تتبع الموقع');
-        } else {
-            showToast('تم قبول الرحلة ولكن تعذر تتبع الموقع', 'warning');
-        }
-
-    } catch (error) {
-        console.error('Error accepting trip:', error);
-        showToast('حدث خطأ أثناء قبول الرحلة', 'error');
-    } finally {
-        hideLoading();
-    }
-}
-
-// تحديث دالة إنهاء الرحلة
-async function endTrip(tripId, driverId) {
-    try {
-        showLoading();
-
-        // تحديث حالة الرحلة
-        await database.ref(`trips/${tripId}`).update({
-            status: 'completed',
-            completedAt: firebase.database.ServerValue.TIMESTAMP
-        });
-
-        // إيقاف تتبع موقع السائق
-        locationNotificationSystem.stopDriverLocationUpdates(driverId);
-        localStorage.removeItem(`watchId_${tripId}`);
-
-        showToast('تم إنهاء الرحلة بنجاح');
-    } catch (error) {
-        console.error('Error ending trip:', error);
-        showToast('حدث خطأ أثناء إنهاء الرحلة', 'error');
-    } finally {
-        hideLoading();
-    }
-}
-
-// طلب أذونات الإشعارات عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', () => {
-    requestNotificationPermission();
-});
-
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-
-
-  function getAllDrivers() {
-    return firebase.database().ref('drivers').once('value')
-        .then(snapshot => {
-            const drivers = [];
-            snapshot.forEach(child => {
-                drivers.push({
-                    id: child.key,
-                    ...child.val()
-                });
+    // تهيئة نظام الإشعارات
+    initialize() {
+        this.checkNotificationSupport()
+            .then(() => this.requestPermission())
+            .catch(error => {
+                console.error('Notification initialization error:', error);
             });
-            return drivers;
-        });
-}
+    }
 
+    // إنشاء حاوية الإشعارات
+    createContainer() {
+        const container = document.createElement('div');
+        container.className = 'notification-container';
+        document.body.appendChild(container);
+        return container;
+    }
 
-// Modified display functions for proper async handling
-async function displayAllDrivers() {
-  try {
-      const drivers = await getAllDrivers();
-      const grid = document.getElementById('driversGrid');
-      grid.innerHTML = '';
-      
-      if (!drivers || drivers.length === 0) {
-          grid.innerHTML = '<div class="no-drivers">لا يوجد سائقين متاحين حالياً</div>';
-          return;
-      }
-
-      drivers.forEach(driver => {
-          const card = createDriverCard(driver);
-          grid.insertAdjacentHTML('beforeend', card);
-      });
-  } catch (error) {
-      console.error('Error displaying drivers:', error);
-      showToast('حدث خطأ في تحميل بيانات السائقين', 'error');
-  }
-}
-
-// Modified event listener
-document.addEventListener('DOMContentLoaded', async function() {
-  await displayAllDrivers();
-  document.querySelector('.location-chip[data-location="all"]').classList.add('active');
-});
-
-// Modified location filter handler
-document.querySelectorAll('.location-chip').forEach(chip => {
-  chip.addEventListener('click', async function() {
-      document.querySelectorAll('.location-chip').forEach(c => c.classList.remove('active'));
-      this.classList.add('active');
-      const location = this.getAttribute('data-location');
-      
-      try {
-          if (location === 'all') {
-              await displayAllDrivers();
-          } else {
-              const drivers = await getAllDrivers();
-              const filteredDrivers = drivers.filter(driver => driver.location === location);
-              const grid = document.getElementById('driversGrid');
-              grid.innerHTML = '';
-              
-              if (filteredDrivers.length === 0) {
-                  grid.innerHTML = '<div class="no-drivers">لا يوجد سائقين في هذه المنطقة</div>';
-                  return;
-              }
-
-              filteredDrivers.forEach(driver => {
-                  const card = createDriverCard(driver);
-                  grid.insertAdjacentHTML('beforeend', card);
-              });
-          }
-      } catch (error) {
-          console.error('Error filtering drivers:', error);
-          showToast('حدث خطأ في تصفية السائقين', 'error');
-      }
-  });
-});
-
-self.addEventListener('install', function(event) {
-    event.waitUntil(
-      caches.open(CACHE_NAME).then(function(cache) {
-        try {
-          console.log('Opened cache');
-          return cache.addAll(urlsToCache);
-        } catch (error) {
-          console.error('Error caching files:', error);
+    // التحقق من دعم الإشعارات
+    async checkNotificationSupport() {
+        if (!('Notification' in window)) {
+            throw new Error('المتصفح لا يدعم الإشعارات');
         }
-      })
+    }
+
+    // طلب إذن الإشعارات
+    async requestPermission() {
+        if (Notification.permission === 'default') {
+            this.showPermissionDialog();
+        } else if (Notification.permission === 'granted') {
+            this.show('مرحباً بك!', 'تم تفعيل الإشعارات بنجاح', 'success');
+        }
+    }
+
+    // عرض نافذة طلب الإذن
+    showPermissionDialog() {
+        const dialog = document.createElement('div');
+        dialog.className = 'permission-dialog';
+        dialog.innerHTML = `
+            <div class="permission-dialog-icon">
+                <i class="fas fa-bell"></i>
+            </div>
+            <h3 class="permission-dialog-title">تفعيل الإشعارات</h3>
+            <p class="permission-dialog-message">
+                نود إرسال إشعارات لإبقائك على اطلاع بآخر التحديثات والعروض.
+                هل تود تفعيل الإشعارات؟
+            </p>
+            <div class="permission-dialog-buttons">
+                <button class="permission-button allow">نعم، تفعيل الإشعارات</button>
+                <button class="permission-button deny">لا، شكراً</button>
+            </div>
+        `;
+
+        document.body.appendChild(dialog);
+
+        dialog.querySelector('.allow').addEventListener('click', async () => {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                this.show('تم!', 'تم تفعيل الإشعارات بنجاح', 'success');
+            }
+            dialog.remove();
+        });
+
+        dialog.querySelector('.deny').addEventListener('click', () => {
+            dialog.remove();
+            this.show('تم الإلغاء', 'يمكنك تفعيل الإشعارات لاحقاً من الإعدادات', 'info');
+        });
+    }
+
+    // عرض إشعار
+    show(title, message, type = 'info', duration = 3000) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-icon">
+                ${this.getIconForType(type)}
+            </div>
+            <div class="notification-content">
+                <div class="notification-title">${title}</div>
+                <div class="notification-message">${message}</div>
+            </div>
+            <button class="notification-close">&times;</button>
+            <div class="notification-progress"></div>
+        `;
+
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.addEventListener('click', () => this.close(notification));
+
+        this.container.appendChild(notification);
+        this.notifications.add(notification);
+
+        setTimeout(() => this.close(notification), duration);
+
+        return notification;
+    }
+
+    // إغلاق إشعار
+    close(notification) {
+        if (!this.notifications.has(notification)) return;
+        
+        notification.style.animation = 'slideOut 0.5s ease forwards';
+        
+        setTimeout(() => {
+            notification.remove();
+            this.notifications.delete(notification);
+        }, 500);
+    }
+
+    // الحصول على أيقونة الإشعار حسب النوع
+    getIconForType(type) {
+        const icons = {
+            success: '<i class="fas fa-check-circle"></i>',
+            error: '<i class="fas fa-times-circle"></i>',
+            warning: '<i class="fas fa-exclamation-circle"></i>',
+            info: '<i class="fas fa-info-circle"></i>'
+        };
+        return icons[type] || icons.info;
+    }
+}
+
+// إنشاء نسخة عامة من نظام الإشعارات
+const notificationSystem = new NotificationSystem();
+
+// دالة مختصرة لعرض الإشعارات
+function showNotification(title, message, type = 'info') {
+    notificationSystem.show(title, message, type);
+}
+
+// مثال على الاستخدام عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    // إشعار ترحيبي
+    setTimeout(() => {
+        showNotification(
+            'مرحباً بك في تاكسي العراق!',
+            'نحن سعداء بانضمامك إلينا',
+            'info'
+        );
+    }, 1000);
+    
+    // التحقق من حالة الاتصال
+    if (navigator.onLine) {
+        showNotification(
+            'متصل بالإنترنت',
+            'يمكنك الآن استخدام جميع خدمات التطبيق',
+            'success'
+        );
+    } else {
+        showNotification(
+            'غير متصل',
+            'يرجى التحقق من اتصال الإنترنت',
+            'error'
+        );
+    }
+});
+
+// مراقبة حالة الاتصال
+window.addEventListener('online', () => {
+    showNotification(
+        'تم استعادة الاتصال',
+        'يمكنك الآن استخدام جميع خدمات التطبيق',
+        'success'
     );
-  });
+});
+
+window.addEventListener('offline', () => {
+    showNotification(
+        'انقطع الاتصال',
+        'يرجى التحقق من اتصال الإنترنت',
+        'error'
+    );
+});
   // إضافة هذا الكود في ملف app.js
 class NotificationTester {
     constructor() {

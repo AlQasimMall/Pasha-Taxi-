@@ -1,221 +1,124 @@
-/* تحديد المتغيرات الأساسية للألوان في التطبيق */
-/* متغيرات النظام */
+  /* نظام الألوان الأساسي */
 :root {
-    /* الألوان الأساسية */
-    --primary-color: #FFD700;          /* ذهبي أساسي */
-    --primary-dark: #ccac00;           /* ذهبي داكن */
-    --primary-light: #ffe44d;          /* ذهبي فاتح */
+    --primary-color: #FFD700;          /* اللون الذهبي الأساسي */
+    --primary-dark: #B8860B;           /* درجة داكنة من الذهبي */
+    --primary-light: #FFF8DC;          /* درجة فاتحة من الذهبي */
     
-    /* درجات الخلفية */
-    --bg-dark: #000000;                /* أسود */
-    --bg-medium: #1a1a1a;              /* رمادي داكن */
-    --bg-light: #242424;               /* رمادي فاتح */
-    --bg-lighter: #333333;             /* رمادي أفتح */
+    --background-dark: #1a1a1a;        /* خلفية داكنة */
+    --background-light: #242424;       /* خلفية فاتحة نسبياً */
     
-    /* ألوان النصوص */
-    --text-primary: #FFFFFF;           /* أبيض */
-    --text-secondary: #FFD700;         /* ذهبي */
-    --text-muted: rgba(255, 255, 255, 0.7);
+    --text-primary: #FFFFFF;           /* لون النص الأساسي */
+    --text-secondary: #CCCCCC;         /* لون النص الثانوي */
     
-    /* ألوان الحالة */
-    --success-color: #2ECC40;
-    --warning-color: #FF851B;
-    --danger-color: #FF4136;
-    --info-color: #39CCCC;
+    --accent-success: #2ECC40;         /* لون النجاح */
+    --accent-error: #FF4136;           /* لون الخطأ */
+    --accent-warning: #FFB236;         /* لون التحذير */
     
-    /* الظلال والتأثيرات */
-    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    --hover-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    /* أبعاد العناصر */
+    /* المسافات والأحجام */
     --border-radius-sm: 8px;
-    --border-radius-md: 15px;
+    --border-radius-md: 12px;
     --border-radius-lg: 20px;
-    --border-radius-xl: 25px;
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
 }
 
-/* تنسيقات عامة */
-body {
-    background-color: var(--bg-dark);
-    color: var(--text-primary);
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* تحسينات العنوان */
+.app-header {
+    background: var(--background-dark);
+    border-bottom: 2px solid var(--primary-color);
+    padding: var(--spacing-md) 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* النصوص والعناصر الرئيسية */
-.text-primary { color: var(--text-primary) !important; }
-.text-secondary { color: var(--text-secondary) !important; }
-.text-muted { color: var(--text-muted) !important; }
-
-/* البطاقات */
-.card {
-    background-color: var(--bg-medium);
-    border: 2px solid var(--primary-color);
-    border-radius: var(--border-radius-md);
-    overflow: hidden;
-    transition: var(--transition);
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--hover-shadow);
-}
-
-/* النماذج والإدخالات */
-.form-control,
-.form-select {
-    background-color: var(--bg-lighter);
-    border: 1px solid var(--primary-color);
-    color: var(--text-primary);
-    border-radius: var(--border-radius-sm);
-    padding: 0.75rem 1rem;
-    transition: var(--transition);
-}
-
-.form-control:focus,
-.form-select:focus {
-    background-color: var(--bg-medium);
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.15);
-}
-
-/* الأزرار */
-.btn-primary {
-    background-color: var(--primary-color);
-    color: var(--bg-dark);
-    border: none;
-    border-radius: var(--border-radius-sm);
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-light);
-    transform: translateY(-2px);
-    box-shadow: var(--hover-shadow);
-}
-
-/* حالة السائق */
-.driver-status {
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius-xl);
-    font-weight: 500;
-}
-
-.status-active {
-    background-color: rgba(46, 204, 64, 0.1);
-    color: var(--success-color);
-}
-
-.status-inactive {
-    background-color: rgba(255, 65, 54, 0.1);
-    color: var(--danger-color);
-}
-
-/* بطاقة نوع الحساب */
-.account-type-card {
-    background-color: var(--bg-light);
-    border: 2px solid var(--primary-color);
-    border-radius: var(--border-radius-md);
-    padding: 2rem;
-    text-align: center;
-    transition: var(--transition);
-}
-
-.account-type-card:hover {
-    background-color: var(--bg-medium);
-    transform: translateY(-5px);
-    box-shadow: var(--hover-shadow);
-}
-
-.account-type-card .icon-container {
-    background-color: var(--primary-color);
-    color: var(--bg-dark);
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin: 0 auto 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-}
-
-/* الشريط الجانبي */
-.side-nav {
-    position: fixed;
-    top: var(--side-nav-height-top);
-    bottom: var(--side-nav-height-bottom);
-    right: 0;
-    height: calc(100% - var(--side-nav-height-top) - var(--side-nav-height-bottom));
-    width: var(--side-nav-width);
-    background: var(--bg-dark);  /* تغيير لون الخلفية إلى أسود */
-    transform: translateX(100%);
-    transition: transform 0.3s ease-in-out;
-    z-index: 9999;
-    box-shadow: var(--card-shadow);
-    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
-    border-left: 2px solid var(--primary-color);
-}
-
-.side-nav.open {
-    transform: translateX(0);
-}
-
-.side-nav-header {
-    padding: 20px;
-    background: var(--bg-dark);
-    color: var(--primary-color);
-    border-bottom: 1px solid var(--primary-color);
-}
-
-.side-nav-title {
+.app-logo {
     color: var(--primary-color);
     font-size: 1.5rem;
     font-weight: bold;
-}
-
-.side-nav-items {
-    padding: 1rem;
-}
-
-.side-nav-item {
+    text-decoration: none;
     display: flex;
     align-items: center;
-    padding: 1rem;
+    gap: var(--spacing-sm);
+}
+
+.app-logo i {
+    font-size: 1.8rem;
+}
+
+/* تحسينات البطاقات */
+.driver-card {
+    background: var(--background-light);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.driver-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2);
+}
+
+.driver-info {
+    padding: var(--spacing-lg);
+}
+
+.driver-name {
+    color: var(--primary-color);
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: var(--spacing-md);
+}
+
+/* تحسينات الأزرار */
+.action-btn {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    font-weight: bold;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.action-btn.primary {
+    background: var(--primary-color);
+    color: var(--background-dark);
+}
+
+.action-btn.secondary {
+    background: var(--background-dark);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+/* تحسينات الفلاتر */
+.location-chip {
+    background: var(--background-light);
     color: var(--text-primary);
-    text-decoration: none;
-    border-radius: var(--border-radius-sm);
-    margin-bottom: 0.5rem;
-    transition: var(--transition);
+    border: 2px solid var(--primary-color);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.side-nav-item:hover {
-    background: var(--bg-medium);
-    color: var(--primary-color);
+.location-chip:hover,
+.location-chip.active {
+    background: var(--primary-color);
+    color: var(--background-dark);
 }
 
-.side-nav-item i {
-    margin-left: 1rem;
-    font-size: 1.2rem;
-    color: var(--primary-color);
-}
-
-/* النوافذ المنبثقة */
+/* تحسينات النوافذ المنبثقة */
 .modal-content {
-    background-color: var(--bg-medium);
+    background: var(--background-dark);
     border: 2px solid var(--primary-color);
     border-radius: var(--border-radius-lg);
 }
 
 .modal-header {
-    background-color: var(--bg-dark);
-    border-bottom: 2px solid var(--primary-color);
-    padding: 1.5rem;
+    border-bottom: 1px solid var(--primary-color);
+    padding: var(--spacing-lg);
 }
 
 .modal-title {
@@ -223,90 +126,269 @@ body {
     font-weight: bold;
 }
 
-/* تحسينات للشاشات الصغيرة */
-@media (max-width: 768px) {
-    .container {
-        padding: 0.5rem;
-    }
-    
-    .account-type-card {
-        padding: 1.5rem;
-    }
-    
-    .icon-container {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .btn-primary {
-        padding: 0.5rem 1.5rem;
-    }
+/* تحسينات النماذج */
+.form-control {
+    background: var(--background-light);
+    border: 1px solid var(--primary-color);
+    color: var(--text-primary);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-md);
 }
 
-/* تنسيق النصوص والعناصر الرئيسية */
-.driver-name,
-.driver-info:not(.location-chip):not(.driver-status),
-.driver-bio,
-.driver-details,
-.modal-title,
-.text-muted,
-.chat-messages,
-.chat-body,
-.stat-value:not(.location-chip),
-.stat-label:not(.location-chip),
-.driver-meta:not(.location-chip),
-.search-result-item .driver-info,
-.registration-section,
-.form-label,
-.modal-body p {
-    color: #FFFFFF !important;  /* جعل كل النصوص بيضاء */
+.form-control:focus {
+    box-shadow: 0 0 0 2px var(--primary-color);
+    border-color: var(--primary-color);
 }
 
-/* تنسيق شريحة الموقع */
+/* تحسينات الإشعارات */
+.notification-toast {
+    background: var(--background-dark);
+    border: 2px solid var(--primary-color);
+    color: var(--text-primary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* تحسينات الحالة */
+.driver-status.status-active {
+    color: var(--accent-success);
+}
+
+.driver-status.status-inactive {
+    color: var(--accent-error);
+}
+
+/* تحسينات القوائم */
+.side-nav {
+    background: var(--background-dark);
+    border-left: 2px solid var(--primary-color);
+}
+
+.side-nav-item {
+    color: var(--text-primary);
+    padding: var(--spacing-md);
+    transition: all 0.3s ease;
+}
+
+.side-nav-item:hover {
+    background: var(--primary-color);
+    color: var(--background-dark);
+}
+
+/* أنماط نافذة البحث الرئيسية */
+#searchModal .modal-content {
+    background-color: #1a1a1a;
+    border: 2px solid #FFD700;
+    border-radius: 15px;
+}
+
+#searchModal .modal-header {
+    border-bottom: 1px solid #FFD700;
+    padding: 1rem 1.5rem;
+}
+
+#searchModal .modal-title {
+    color: #FFD700;
+    font-weight: bold;
+}
+
+/* أنماط حقل البحث */
+.search-input-wrapper {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.search-input {
+    background-color: #333;
+    border: 2px solid #FFD700;
+    color: #FFFFFF;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+/* أنماط خيارات البحث */
+.search-options {
+    margin: 1rem 0;
+}
+
+.btn-group {
+    width: 100%;
+    gap: 0.5rem;
+    display: flex;
+}
+
+/* تنسيق أزرار الخيارات */
+.btn-check + .btn-outline-primary {
+    background-color: #333;
+    color: #FFD700;
+    border: 1px solid #FFD700;
+    padding: 0.5rem 1rem;
+    flex: 1;
+    font-weight: bold;
+}
+
+.btn-check:checked + .btn-outline-primary {
+    background-color: #FFD700;
+    color: #000000;
+    border-color: #FFD700;
+}
+
+/* تنسيق نتائج البحث */
+.search-results {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.search-result-item {
+    background-color: #000000;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.search-result-item:hover {
+    border-color: #FFD700;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.1);
+}
+
+/* تنسيق معلومات السائق في النتائج */
+.search-result-item .driver-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.search-result-item .driver-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #FFD700;
+    object-fit: cover;
+}
+
+.search-result-item .driver-details {
+    flex: 1;
+}
+
+.search-result-item .driver-name {
+    color: #FFFFFF;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+}
+
+.search-result-item .driver-meta {
+    color: #CCCCCC;
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+}
+
+.search-result-item .driver-meta i {
+    color: #FFD700;
+    margin-left: 0.5rem;
+}
+
+/* تنسيق التمييز في نتائج البحث */
+.highlight {
+    background-color: rgba(255, 215, 0, 0.3);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    color: #FFD700;
+}
+
+/* تنسيق رسالة عدم وجود نتائج */
+.no-results {
+    text-align: center;
+    color: #FFFFFF;
+    padding: 2rem;
+    font-size: 1.1rem;
+}
+
+/* تنسيق شريط التمرير */
+.search-results::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results::-webkit-scrollbar-track {
+    background: #333;
+    border-radius: 3px;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+    background: #FFD700;
+    border-radius: 3px;
+}
+
+/* حالة تحميل النتائج */
+.search-loading {
+    text-align: center;
+    padding: 2rem;
+    color: #FFD700;
+}
+
+.search-loading .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Preserve original location chip styles */
 .location-chip {
-    background-color: #000000 !important;  /* خلفية سوداء */
-    border: 2px solid #FFD700 !important;  /* حدود ذهبية */
-    color: #FFFFFF !important;  /* نص أبيض */
+    background-color: #000000 !important;
+    border: 2px solid #FFD700 !important;
+    color: #FFFFFF !important;
 }
 
-/* تأثير التحويم والتنشيط لشريحة الموقع */
 .location-chip:hover,
 .location-chip.active {
     background-color: #1a1a1a !important;
+    color: #FFFFFF !important;
     border-color: #FFD700 !important;
 }
 
-/* أيقونات شريحة الموقع */
 .location-chip i {
-    color: #FFD700 !important;  /* لون ذهبي للأيقونات */
+    color: #FFD700 !important;
 }
 
-/* حالة السائق */
+/* Preserve driver status styles */
 .driver-status {
     background: rgba(255, 255, 255, 0.8) !important;
 }
 
 .status-active {
-    color: var(--success-color) !important;  /* لون أخضر للحالة النشطة */
+    color: var(--success-color) !important;
 }
 
 .status-inactive {
-    color: var(--accent-color) !important;  /* لون أحمر للحالة غير النشطة */
+    color: var(--accent-color) !important;
 }
 
-/* تنسيق حقول الإدخال والبحث */
+/* Additional preservation rules for specific components */
 .search-input,
 .form-control {
-    color: #000000 !important;  /* نص أسود لسهولة القراءة */
+    color: #000000 !important;
 }
 
-/* حدود النوافذ المنبثقة */
 .modal-header,
 .modal-footer {
     border-color: rgba(255, 215, 0, 0.2) !important;
 }
 
-/* أزرار الإجراءات */
+/* Keep original colors for action buttons */
 .action-btn.primary {
     background: var(--primary-color) !important;
     color: var(--secondary-color) !important;
@@ -317,7 +399,7 @@ body {
     color: var(--primary-color) !important;
 }
 
-/* تنسيق نافذة التسجيل */
+/* Registration Modal Styles */
 .modal-content {
     background-color: #1a1a1a !important;
     border: 2px solid #FFD700 !important;
@@ -325,13 +407,12 @@ body {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* عنوان النافذة المنبثقة */
 .modal-header {
     background-color: #000000 !important;
     border-bottom: 2px solid #FFD700 !important;
+    padding: 1.5rem;
 }
 
-/* العنوان */
 .modal-title {
     color: #FFD700 !important;
     font-size: 1.5rem;
@@ -339,93 +420,103 @@ body {
     text-align: center;
 }
 
-/* زر الإغلاق */
 .btn-close {
     color: #FFD700 !important;
     opacity: 1 !important;
+    filter: brightness(0) invert(1) sepia(1) saturate(10000%) hue-rotate(300deg);
 }
 
-/* قسم التسجيل */
 .registration-section {
     background-color: #242424 !important;
     border: 1px solid #FFD700 !important;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
 }
 
-/* عنوان القسم */
 .section-title {
     color: #FFD700 !important;
     border-bottom: 2px solid #FFD700;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-weight: bold;
 }
 
-/* تنسيق النماذج والمدخلات */
+/* Form Controls */
+.form-label {
+    color: #FFFFFF !important;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
 .form-control,
 .form-select {
     background-color: #333333 !important;
     border: 1px solid #FFD700 !important;
     color: #FFFFFF !important;
+    border-radius: 10px;
 }
 
-/* حالة التركيز للمدخلات */
 .form-control:focus,
 .form-select:focus {
     background-color: #444444 !important;
     border-color: #FFD700 !important;
     box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25) !important;
+    color: #FFFFFF !important;
 }
 
-/* تنسيق الأزرار الرئيسية */
-.btn-primary {
-    background-color: #FFD700 !important;
-    color: #000000 !important;
-    font-weight: bold;
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
 }
 
-/* تأثير التحويم للأزرار */
-.btn-primary:hover {
-    background-color: #ccac00 !important;
-    transform: translateY(-2px);
-}
-
-/* بطاقات نوع الحساب */
-.account-type-card {
-    background-color: #242424 !important;
-    border: 2px solid #FFD700 !important;
-}
-
-/* تأثير التحويم لبطاقات نوع الحساب */
-.account-type-card:hover {
-    background-color: #333333 !important;
-    transform: translateY(-5px);
-}
-
-/* حاوية الأيقونات */
-.icon-container {
-    background-color: #FFD700 !important;
-}
-
-.icon-container i {
-    color: #000000 !important;
-}
-
-/* تنسيق منطقة رفع المستندات */
-.document-upload {
+/* Upload Containers */
+.user-photo-upload,
+.driver-photo-upload {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
     border: 2px dashed #FFD700 !important;
     background-color: #242424 !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-/* تأثير التحويم لمنطقة رفع المستندات */
-.document-upload:hover {
-    background-color: #333333 !important;
-}
-
-/* الروابط داخل النوافذ */
-.modal-body a {
+.upload-placeholder {
+    text-align: center;
     color: #FFD700 !important;
 }
 
-.modal-body a:hover {
-    color: #ccac00 !important;
+.upload-placeholder i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #FFD700 !important;
 }
+
+/* Terms Checkbox */
+.form-check-label {
+    color: #FFFFFF !important;
+}
+
+.form-check-input {
+    border-color: #FFD700 !important;
+}
+
+.form-check-input:checked {
+    background-color: #FFD700 !important;
+    border-color: #FFD700 !important;
+}
+
+/* Submit Button */
+.btn-primary {
+    background-color: #FFD700 !important;
+    border-color: #FFD700 !important;
+    color: #000000 !important;
+    font-weight: bold;
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
 .btn-primary:hover {
     background-color: #ccac00 !important;
     border-color: #ccac00 !important;
@@ -2216,7 +2307,7 @@ body {
 }
 
 .side-nav-close:hover {
-    background: rgb(255, 255, 254);
+    background: rgba(255, 215, 0, 0.1);
 }
 
 .side-nav-items {
@@ -2369,9 +2460,9 @@ body {
     /* تقويس الحواف */
     --side-nav-bg-color: var(--secondary-color);
     /* لون خلفية الشريط */
-    --side-nav-shadow: -2px 0 10px rgba(0, 0, 0, 0);
+    --side-nav-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
     /* ظل الشريط */
-    --backdrop-bg-color: rgba(15, 14, 14, 0.697);
+    --backdrop-bg-color: rgba(252, 252, 252, 0);
     /* لون خلفية التمويه */
 }
 
@@ -2939,3 +3030,280 @@ body {
     border-radius: 8px;
     border: 2px solid #ddd;
 }
+#notification-test {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#notification-status {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.status-item {
+    margin: 8px 0;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: #fff;
+    border-right: 3px solid #007bff;
+}
+
+.status-item strong {
+    color: #007bff;
+}
+
+.status-detail {
+    display: block;
+    margin-top: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    word-break: break-all;
+    background-color: #f8f9fa;
+    padding: 4px;
+    border-radius: 2px;
+}
+
+.test-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.test-button:hover {
+    background-color: #0056b3;
+}
+
+.test-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+/* أنماط الإشعارات المحسنة */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+    width: 100%;
+}
+
+.notification {
+    background: #FFFFFF;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.5s ease forwards;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.notification.success {
+    border-right: 5px solid #2ECC40;
+}
+
+.notification.error {
+    border-right: 5px solid #FF4136;
+}
+
+.notification.warning {
+    border-right: 5px solid #FFB236;
+}
+
+.notification.info {
+    border-right: 5px solid #0074D9;
+}
+
+.notification-icon {
+    font-size: 24px;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.notification.success .notification-icon {
+    color: #2ECC40;
+    background: rgba(46, 204, 64, 0.1);
+}
+
+.notification.error .notification-icon {
+    color: #FF4136;
+    background: rgba(255, 65, 54, 0.1);
+}
+
+.notification.warning .notification-icon {
+    color: #FFB236;
+    background: rgba(255, 178, 54, 0.1);
+}
+
+.notification.info .notification-icon {
+    color: #0074D9;
+    background: rgba(0, 116, 217, 0.1);
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 5px;
+}
+
+.notification-message {
+    color: #666666;
+    font-size: 14px;
+}
+
+.notification-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #999999;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+    transition: color 0.3s ease;
+}
+
+.notification-close:hover {
+    color: #000000;
+}
+
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: #E0E0E0;
+    width: 100%;
+}
+
+.notification-progress::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: currentColor;
+    animation: progress 3s linear forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes progress {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* تصميم نافذة طلب الإذن */
+.permission-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    text-align: center;
+}
+
+.permission-dialog-icon {
+    font-size: 48px;
+    color: #FFD700;
+    margin-bottom: 20px;
+}
+
+.permission-dialog-title {
+    font-size: 24px;
+    color: #000000;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.permission-dialog-message {
+    color: #666666;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.permission-dialog-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.permission-button {
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.permission-button.allow {
+    background: #FFD700;
+    color: #000000;
+}
+
+.permission-button.deny {
+    background: #F5F5F5;
+    color: #666666;
+}
+
+.permission-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+    
