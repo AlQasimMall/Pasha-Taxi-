@@ -7234,25 +7234,7 @@ class NotificationTester {
     }
 }
 
-// إضافة زر اختبار في واجهة المستخدم
-function addTestButton() {
-    const button = document.createElement('button');
-    button.className = 'btn btn-primary position-fixed bottom-0 end-0 m-3';
-    button.innerHTML = '<i class="fas fa-bell me-2"></i>اختبار الإشعارات';
-    
-    button.onclick = async () => {
-        const tester = new NotificationTester();
-        const result = await tester.testNotifications();
-        
-        if (result.success) {
-            showToast('تم إعداد الإشعارات بنجاح', 'success');
-        } else {
-            showToast(result.error, 'error');
-        }
-    };
-    
-    document.body.appendChild(button);
-}
+
 
 // تشغيل الاختبار عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', addTestButton);
