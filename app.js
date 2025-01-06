@@ -1,4 +1,4 @@
- const firebaseConfig = {
+const firebaseConfig = {
         apiKey: "AIzaSyDGpAHia_wEmrhnmYjrPf1n1TrAzwEMiAI",
         authDomain: "messageemeapp.firebaseapp.com",
         databaseURL: "https://messageemeapp-default-rtdb.firebaseio.com",
@@ -747,27 +747,63 @@ notificationHandler.initialize().catch(console.error);
     }
 
     // مثال على الاستخدام في دالة إضافة السائق
-    async function handleAddDriver(event) {
-        event.preventDefault();
+  async function handleAddDriver(event) {
+    event.preventDefault();
+    showLoading();
 
-        const location = document.getElementById('driverLocation').value;
-        const coordinates = getCoordinatesForLocation(location);
+    try {
+        const imageFile = document.getElementById('driverImage').files[0];
+        if (!imageFile) {
+            throw new Error('الرجاء اختيار صورة للسائق');
+        }
 
-        // استخدام الإحداثيات في البيانات المرسلة
+        // الحصول على الإحداثيات مباشرة من حقول الإدخال
+        const latitude = parseFloat(document.getElementById('driverLatitude').value);
+        const longitude = parseFloat(document.getElementById('driverLongitude').value);
+        
+        // التحقق من وجود الإحداثيات
+        if (!latitude || !longitude) {
+            throw new Error('يرجى تحديد موقع السائق أولاً');
+        }
+
+        const imageRef = storage.ref(`drivers/${Date.now()}_${imageFile.name}`);
+        const uploadTask = await imageRef.put(imageFile);
+        const imageUrl = await uploadTask.ref.getDownloadURL();
 
         const driverData = {
-            // ... البيانات الأخرى
-            latitude: coordinates.lat,
-            longitude: coordinates.lng
+            name: document.getElementById('driverName').value,
+            phone: document.getElementById('driverPhone').value,
+            carType: document.getElementById('carType').value,
+            carModel: document.getElementById('carModel').value,
+            location: document.getElementById('driverLocation').value, // المحافظة فقط
+            coordinates: {
+                lat: latitude,
+                lng: longitude
+            },
+            bio: document.getElementById('driverBio').value,
+            imageUrl: imageUrl,
+            rating: 5,
+            trips: 0,
+            active: true,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
         };
 
-        // إكمال عملية إضافة السائق
-        try {
-            // ... كود إرسال البيانات
-        } catch (error) {
-            console.error('Error adding driver:', error);
-        }
+        await database.ref('drivers').push(driverData);
+
+        // إغلاق النافذة المنبثقة بعد النجاح
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addDriverModal'));
+        modal.hide();
+
+        document.getElementById('addDriverForm').reset();
+        showToast('تم إضافة السائق بنجاح');
+        loadDrivers();
+    } catch (error) {
+        console.error('Error adding driver:', error);
+        showToast(error.message, 'error');
+    } finally {
+        hideLoading();
     }
+}
 
     function handleLocationError(error) {
         // التعامل مع خطأ في الموقع الجغرافي
@@ -1027,51 +1063,66 @@ notificationHandler.initialize().catch(console.error);
     // تحديث دالة إنشاء بطاقة السائق
     // دالة إنشاء بطاقة السائق المحدثة
     function createDriverCard(driver, key) {
-        const distance = userLocation && driver.coordinates ?
-            calculateDistance(userLocation, driver.coordinates) : null;
-
-        return `
+    const distance = userLocation && driver.coordinates ?
+        calculateDistance(userLocation, driver.coordinates) : null;
+    
+    return `
         <div class="driver-card animate__animated animate__fadeIn" data-driver-id="${key}">
-            <!-- أزرار الحذف والتعديل -->
+            <!-- قسم أزرار الإجراءات العلوية -->
             <div class="driver-card-actions">
-                <button class="action-icon delete-btn" onclick="confirmDeleteDriver('${key}')">
+                <button class="action-icon delete-btn" onclick="confirmDeleteDriver('${key}')" title="حذف السائق">
                     <i class="fas fa-trash-alt"></i>
                 </button>
-                <button class="action-icon edit-btn" onclick="showEditDriverModal('${key}')">
+                <button class="action-icon edit-btn" onclick="showEditDriverModal('${key}')" title="تعديل البيانات">
                     <i class="fas fa-edit"></i>
+                </button>
+                <!-- إضافة أزرار التتبع -->
+                <button class="action-icon track-btn" onclick="startDriverLocationTracking('${key}')" title="تفعيل تتبع الموقع">
+                    <i class="fas fa-location-arrow"></i>
+                </button>
+                <button class="action-icon stop-track-btn" onclick="stopDriverLocationTracking()" title="إيقاف التتبع">
+                    <i class="fas fa-stop-circle"></i>
                 </button>
             </div>
 
+            <!-- صورة السائق والحالة -->
             <div class="driver-image-container">
                 <img src="${driver.imageUrl}" alt="${driver.name}" class="driver-image">
                 <div class="driver-status ${driver.active ? 'status-active' : 'status-inactive'}">
                     ${driver.active ? 'متاح' : 'مشغول'}
                 </div>
+                <!-- مؤشر التتبع -->
+                <div class="tracking-indicator" id="tracking-${key}">
+                    <i class="fas fa-satellite-dish fa-pulse"></i>
+                </div>
             </div>
-               <div class="driver-info">
-    <h5 class="driver-name">${driver.name}</h5>
-    <div class="driver-stats">
-        <div class="stat-item" onclick="addRating('${key}')" style="cursor: pointer">
-            <div class="stat-value">
-                <i class="fas fa-star" style="color: #FFD700;"></i>
-                ${driver.rating ? driver.rating.toFixed(1) : '5.0'}
-            </div>
-            <div class="stat-label">اضغط للتقييم</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value">
-                <i class="fas fa-route"></i>
-                ${driver.trips || 0}
-            </div>
-            <div class="stat-label">عدد الرحلات</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value">
-                ${distance ? distance.toFixed(1) : '--'}
-            </div>
-            <div class="stat-label">كم</div
+
+            <!-- معلومات السائق -->
+            <div class="driver-info">
+                <h5 class="driver-name">${driver.name}</h5>
+                <div class="driver-stats">
+                    <div class="stat-item" onclick="addRating('${key}')" style="cursor: pointer">
+                        <div class="stat-value">
+                            <i class="fas fa-star" style="color: #FFD700;"></i>
+                            ${driver.rating ? driver.rating.toFixed(1) : '5.0'}
+                        </div>
+                        <div class="stat-label">اضغط للتقييم</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">
+                            <i class="fas fa-route"></i>
+                            ${driver.trips || 0}
+                        </div>
+                        <div class="stat-label">عدد الرحلات</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">
+                            ${distance ? distance.toFixed(1) : '--'}
+                        </div>
+                        <div class="stat-label">كم</div>
                     </div>
                 </div>
+                
                 <div class="text-muted">
                     <p class="mb-2">
                         <i class="fas fa-car me-2"></i>
@@ -1083,20 +1134,49 @@ notificationHandler.initialize().catch(console.error);
                     </p>
                 </div>
             </div>
+
+            <!-- أزرار الإجراءات السفلية -->
             <div class="driver-actions">
                 <button class="action-btn primary" onclick="viewDriverLocation('${key}')">
                     <i class="fas fa-map-marker-alt"></i>
                     عرض الموقع
                 </button>
-               <button class="action-btn secondary" onclick="openChatWindow('${key}')">
-    <i class="fas fa-comment"></i> مراسلة
-</button>
-
-
+                <button class="action-btn secondary" onclick="openChatWindow('${key}')">
+                    <i class="fas fa-comment"></i> 
+                    مراسلة
+                </button>
             </div>
         </div>
     `;
+}
+function startDriverLocationTracking(driverId) {
+    // ... الكود السابق ...
+
+    // تحديث حالة التتبع في البطاقة
+    const driverCard = document.querySelector(`[data-driver-id="${driverId}"]`);
+    if (driverCard) {
+        driverCard.setAttribute('data-tracking', 'true');
+        const indicator = driverCard.querySelector('.tracking-indicator');
+        if (indicator) {
+            indicator.classList.add('active');
+        }
     }
+
+    showToast('تم تفعيل تتبع الموقع بنجاح', 'success');
+}
+
+function stopDriverLocationTracking() {
+    // ... الكود السابق ...
+
+    // إزالة حالة التتبع من جميع البطاقات
+    document.querySelectorAll('.driver-card').forEach(card => {
+        card.setAttribute('data-tracking', 'false');
+        const indicator = card.querySelector('.tracking-indicator');
+        if (indicator) {
+            indicator.classList.remove('active');
+        }
+    });
+}
 
 
 
@@ -1393,56 +1473,63 @@ notificationHandler.initialize().catch(console.error);
             reader.readAsDataURL(file);
         }
     }
+async function handleAddDriver(event) {
+    event.preventDefault();
+    showLoading();
 
-    async function handleAddDriver(event) {
-        event.preventDefault();
-        showLoading();
-
-        try {
-            const imageFile = document.getElementById('driverImage').files[0];
-            if (!imageFile) {
-                throw new Error('الرجاء اختيار صورة للسائق');
-            }
-
-            // الحصول على الإحداثيات من اسم الموقع
-            const location = document.getElementById('driverLocation').value;
-            const coordinates = await getCoordinatesForLocation(location);
-
-            const imageRef = storage.ref(`drivers/${Date.now()}_${imageFile.name}`);
-            const uploadTask = await imageRef.put(imageFile);
-            const imageUrl = await uploadTask.ref.getDownloadURL();
-
-            const driverData = {
-                name: document.getElementById('driverName').value,
-                phone: document.getElementById('driverPhone').value,
-                carType: document.getElementById('carType').value,
-                carModel: document.getElementById('carModel').value,
-                location: location,
-                coordinates: coordinates, // استخدام الإحداثيات التي تم الحصول عليها
-                bio: document.getElementById('driverBio').value,
-                imageUrl: imageUrl,
-                rating: 5,
-                trips: 0,
-                active: true,
-                createdAt: firebase.database.ServerValue.TIMESTAMP
-            };
-
-            await database.ref('drivers').push(driverData);
-
-            // إغلاق النافذة المنبثقة بعد النجاح
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addDriverModal'));
-            modal.hide();
-
-            document.getElementById('addDriverForm').reset();
-            showToast('تم إضافة السائق بنجاح');
-            loadDrivers();
-        } catch (error) {
-            console.error('Error adding driver:', error);
-            showToast(error.message, 'error');
-        } finally {
-            hideLoading();
+    try {
+        const imageFile = document.getElementById('driverImage').files[0];
+        if (!imageFile) {
+            throw new Error('الرجاء اختيار صورة للسائق');
         }
+
+        // الحصول على الإحداثيات مباشرة من حقول الإدخال
+        const latitude = parseFloat(document.getElementById('driverLatitude').value);
+        const longitude = parseFloat(document.getElementById('driverLongitude').value);
+        
+        // التحقق من وجود الإحداثيات
+        if (!latitude || !longitude) {
+            throw new Error('يرجى تحديد موقع السائق أولاً');
+        }
+
+        const imageRef = storage.ref(`drivers/${Date.now()}_${imageFile.name}`);
+        const uploadTask = await imageRef.put(imageFile);
+        const imageUrl = await uploadTask.ref.getDownloadURL();
+
+        const driverData = {
+            name: document.getElementById('driverName').value,
+            phone: document.getElementById('driverPhone').value,
+            carType: document.getElementById('carType').value,
+            carModel: document.getElementById('carModel').value,
+            location: document.getElementById('driverLocation').value, // المحافظة فقط
+            coordinates: {
+                lat: latitude,
+                lng: longitude
+            },
+            bio: document.getElementById('driverBio').value,
+            imageUrl: imageUrl,
+            rating: 5,
+            trips: 0,
+            active: true,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        await database.ref('drivers').push(driverData);
+
+        // إغلاق النافذة المنبثقة بعد النجاح
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addDriverModal'));
+        modal.hide();
+
+        document.getElementById('addDriverForm').reset();
+        showToast('تم إضافة السائق بنجاح');
+        loadDrivers();
+    } catch (error) {
+        console.error('Error adding driver:', error);
+        showToast(error.message, 'error');
+    } finally {
+        hideLoading();
     }
+}
 
     function bookDriver(driverId) {
         showLoading();
@@ -2945,26 +3032,273 @@ class NotificationTester {
         };
     }
 }
-
-// إضافة زر اختبار في واجهة المستخدم
-function addTestButton() {
-    const button = document.createElement('button');
-    button.className = 'btn btn-primary position-fixed bottom-0 end-0 m-3';
-    button.innerHTML = '<i class="fas fa-bell me-2"></i>اختبار الإشعارات';
-    
-    button.onclick = async () => {
-        const tester = new NotificationTester();
-        const result = await tester.testNotifications();
-        
-        if (result.success) {
-            showToast('تم إعداد الإشعارات بنجاح', 'success');
-        } else {
-            showToast(result.error, 'error');
+function captureCurrentLocation() {
+    // إنشاء وعد لمعالجة تحديد الموقع
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ!',
+                text: 'متصفحك لا يدعم تحديد الموقع'
+            });
+            reject('Geolocation not supported');
+            return;
         }
-    };
-    
-    document.body.appendChild(button);
+
+        // عرض مؤشر التحميل
+        const loadingAlert = Swal.fire({
+            title: 'جاري تحديد موقعك...',
+            text: 'يرجى الانتظار',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                // إغلاق مؤشر التحميل فوراً
+                loadingAlert.close();
+
+                // تحديث حقول الإحداثيات
+                document.getElementById('driverLatitude').value = position.coords.latitude;
+                document.getElementById('driverLongitude').value = position.coords.longitude;
+
+                // عرض رسالة النجاح لفترة قصيرة
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم!',
+                    text: 'تم تحديد موقعك بنجاح',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                resolve(position);
+            },
+            (error) => {
+                // إغلاق مؤشر التحميل
+                loadingAlert.close();
+
+                let errorMessage = 'حدث خطأ في تحديد الموقع';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'تم رفض الوصول إلى الموقع. يرجى السماح للتطبيق باستخدام خدمة الموقع';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'معلومات الموقع غير متوفرة';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'انتهت مهلة طلب الموقع';
+                        break;
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ!',
+                    text: errorMessage
+                });
+
+                reject(error);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    });
 }
+
 
 // تشغيل الاختبار عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', addTestButton);
+// إضافة متغير عالمي لتخزين معرف المراقبة
+let locationWatchId = null;
+
+// دالة بدء تتبع موقع السائق
+function startDriverLocationTracking(driverId) {
+    if (!navigator.geolocation) {
+        showToast('متصفحك لا يدعم خدمة تحديد الموقع', 'error');
+        return;
+    }
+
+    // إيقاف أي تتبع سابق إذا كان موجوداً
+    if (locationWatchId) {
+        stopDriverLocationTracking();
+    }
+
+    // بدء مراقبة الموقع
+    locationWatchId = navigator.geolocation.watchPosition(
+        (position) => {
+            updateDriverLocation(driverId, position);
+        },
+        (error) => {
+            handleLocationError(error);
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+
+    // تخزين معرف السائق في localStorage
+    localStorage.setItem('activeDriverId', driverId);
+    
+    showToast('تم تفعيل تتبع الموقع بنجاح', 'success');
+}
+
+// دالة إيقاف تتبع موقع السائق
+function stopDriverLocationTracking() {
+    if (locationWatchId) {
+        navigator.geolocation.clearWatch(locationWatchId);
+        locationWatchId = null;
+        localStorage.removeItem('activeDriverId');
+        showToast('تم إيقاف تتبع الموقع', 'info');
+    }
+}
+
+// دالة تحديث موقع السائق
+async function updateDriverLocation(driverId, position) {
+    try {
+        const locationUpdate = {
+            coordinates: {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            },
+            lastUpdated: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        // تحديث الموقع في قاعدة البيانات
+        await database.ref(`drivers/${driverId}`).update(locationUpdate);
+
+        // تحديث موقع السائق على الخريطة
+        updateDriverMarkerOnMap(driverId, locationUpdate.coordinates);
+    } catch (error) {
+        console.error('Error updating driver location:', error);
+        showToast('حدث خطأ في تحديث الموقع', 'error');
+    }
+}
+
+// دالة تحديث موقع السائق على الخريطة
+function updateDriverMarkerOnMap(driverId, coordinates) {
+    if (!map || !markerLayer) return;
+
+    // البحث عن علامة السائق الحالية
+    let driverMarker = markerLayer.getLayers().find(
+        layer => layer.options.driverId === driverId
+    );
+
+    if (driverMarker) {
+        // تحديث موقع العلامة الحالية
+        driverMarker.setLatLng([coordinates.lat, coordinates.lng]);
+    } else {
+        // إنشاء علامة جديدة للسائق
+        database.ref(`drivers/${driverId}`).once('value')
+            .then(snapshot => {
+                const driver = snapshot.val();
+                if (driver) {
+                    driverMarker = L.marker([coordinates.lat, coordinates.lng], {
+                        icon: L.divIcon({
+                            html: `
+                                <div style="position: relative; text-align: center;">
+                                    <img src="${driver.imageUrl || 'default-avatar.png'}" 
+                                         alt="صورة السائق" 
+                                         style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #FFD700;">
+                                    <i class="fas fa-taxi" 
+                                       style="position: absolute; bottom: -5px; right: 50%; transform: translateX(50%); 
+                                       color: #FFD700; font-size: 1.2rem;"></i>
+                                </div>
+                            `,
+                            className: 'driver-marker',
+                            iconSize: [40, 40]
+                        }),
+                        driverId: driverId
+                    }).addTo(markerLayer);
+
+                    // إضافة النافذة المنبثقة
+                    driverMarker.bindPopup(`
+                        <div style="text-align: center;">
+                            <h6>${driver.name}</h6>
+                            <p>${driver.carType} - ${driver.carModel}</p>
+                            <button class="btn btn-sm btn-primary" onclick="openChatWindow('${driverId}')">
+                                <i class="fas fa-comment"></i> مراسلة
+                            </button>
+                        </div>
+                    `);
+                }
+            });
+    }
+}
+
+// تعديل دالة handleAddDriver لتفعيل التتبع المباشر
+async function handleAddDriver(event) {
+    event.preventDefault();
+    showLoading();
+
+    try {
+        const imageFile = document.getElementById('driverImage').files[0];
+        if (!imageFile) {
+            throw new Error('الرجاء اختيار صورة للسائق');
+        }
+
+        const latitude = parseFloat(document.getElementById('driverLatitude').value);
+        const longitude = parseFloat(document.getElementById('driverLongitude').value);
+        
+        if (!latitude || !longitude) {
+            throw new Error('يرجى تحديد موقع السائق أولاً');
+        }
+
+        const imageRef = storage.ref(`drivers/${Date.now()}_${imageFile.name}`);
+        const uploadTask = await imageRef.put(imageFile);
+        const imageUrl = await uploadTask.ref.getDownloadURL();
+
+        const driverData = {
+            name: document.getElementById('driverName').value,
+            phone: document.getElementById('driverPhone').value,
+            carType: document.getElementById('carType').value,
+            carModel: document.getElementById('carModel').value,
+            location: document.getElementById('driverLocation').value,
+            coordinates: {
+                lat: latitude,
+                lng: longitude
+            },
+            bio: document.getElementById('driverBio').value,
+            imageUrl: imageUrl,
+            rating: 5,
+            trips: 0,
+            active: true,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        // إضافة السائق إلى قاعدة البيانات
+        const newDriverRef = await database.ref('drivers').push(driverData);
+        const driverId = newDriverRef.key;
+
+        // تفعيل تتبع الموقع المباشر
+        startDriverLocationTracking(driverId);
+
+        // إغلاق النافذة المنبثقة
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addDriverModal'));
+        modal.hide();
+
+        document.getElementById('addDriverForm').reset();
+        showToast('تم إضافة السائق وتفعيل تتبع الموقع بنجاح');
+        loadDrivers();
+    } catch (error) {
+        console.error('Error adding driver:', error);
+        showToast(error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// إضافة استعادة حالة التتبع عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    const activeDriverId = localStorage.getItem('activeDriverId');
+    if (activeDriverId) {
+        startDriverLocationTracking(activeDriverId);
+    }
+});
